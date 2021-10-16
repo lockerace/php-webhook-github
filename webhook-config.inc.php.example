@@ -1,0 +1,27 @@
+<?
+
+if(!defined('WebhookMustExists')) {
+    http_response_code(404);
+    die();
+}
+
+$secret = 'secret'; // Github Webhook Secret
+$logFileName = dirname(__FILE__).'/webhook.log' // stdout log file;
+$homePath = '/home/username'; // $HOME path
+$branchCfg = [
+    'github-username/repository-name/branch-name' => [
+        'name' => 'name', // Config name
+        'root' => '~/public_html', // path to git local copy root
+        'cmds' => [ // list of executed script
+            'git stash',
+            'git pull origin main 2>&1',
+            'git stash pop',
+            'composer install --no-interaction 2>&1',
+            'php artisan migrate 2>&1',
+            'php artisan config:cache 2>&1',
+            'php artisan config:clear 2>&1',
+            'php artisan cache:clear 2>&1'
+        ],
+    ],
+];
+$pingBranch = 'main'; // Github webhook ping event default branch name
